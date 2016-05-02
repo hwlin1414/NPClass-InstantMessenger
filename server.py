@@ -4,8 +4,8 @@
 import ConfigParser
 import argparse
 import sys
-import os
 import socket, ssl
+import select
 import backends
 
 cfgfile = ('server.conf.example', 'server.conf')
@@ -31,13 +31,25 @@ def main(args, cfg, backend):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((args['listen'], args['port']))
-    sock.listen(10)
+    sock.listen(socket.SOMAXCONN)
+    listen = [sock, sys.stdin]
     while True:
-        newsock, fromaddr = sock.accept()
-        ssl_sock = context.wrap_socket(newsock, server_side=True)
-        print fromaddr
-        print ssl_sock.recv(256)
-        ssl_sock.send("world")
+        handles = select.select(listen, [], listen)
+        for handle in handles[0]:
+            if handle == sys.stdin:
+                print handle.readline(),
+            elif handle == sock:
+                newsock, fromaddr = handle.accept()
+                listen.append(context.wrap_socket(newsock, server_side=True))
+            else:
+                try:
+                    msg = handle.recv(256)
+                    if len(msg) == 0: raise socket.error
+                    print "%s: %s" % (str(handle.getpeername()), msg), 
+                    handle.send(msg)
+                except socket.error, e:
+                    handle.close()
+                    listen.remove(handle)
 
 if __name__ == "__main__":
     cfg = {
