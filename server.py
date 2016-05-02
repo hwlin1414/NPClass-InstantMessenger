@@ -5,6 +5,7 @@ import ConfigParser
 import argparse
 import sys
 import os
+import socket, ssl
 import backends
 
 cfgfile = ('server.conf', )
@@ -24,6 +25,20 @@ def get_backend(cfg):
     backend = getattr(backends, cfg['defaults']['backend']).database(**dbconf)
     return backend.open()
 
+def main(args, cfg, backend):
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain(certfile = cfg['defaults']['cert'], keyfile = cfg['defaults']['key'])
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((args['listen'], args['port']))
+    sock.listen(10)
+    while True:
+        newsock, fromaddr = sock.accept()
+        ssl_sock = context.wrap_socket(newsock, server_side=True)
+        print fromaddr
+        print ssl_sock.recv(256)
+        ssl_sock.send("world")
+
 if __name__ == "__main__":
     cfg = {
         'listen': '0.0.0.0',
@@ -38,10 +53,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "Instant Messanger Server", prog = sys.argv[0])
     parser.add_argument('-l', dest = 'listen', help = "Listen interface")
     parser.add_argument('-p', dest = 'port', type=int, help = "Listen port")
-    parser.set_defaults(**cfg)
+    parser.add_argument('-d', dest = 'debug', action="store_true", help = "Debug mode")
+    parser.set_defaults(**cfg['defaults'])
     args = vars(parser.parse_args(sys.argv[1:]))
+    if args['debug']: print args
 
     backend = get_backend(cfg)
     if backend is None: 
         print "backend error"
         sys.exit(1)
+    main(args, cfg, backend)
