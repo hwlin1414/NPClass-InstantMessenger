@@ -8,7 +8,7 @@ import os
 import socket, ssl
 import backends
 
-cfgfile = ('server.conf', )
+cfgfile = ('server.conf.example', 'server.conf')
 
 def get_backend(cfg):
     if 'backend' not in cfg['defaults']:
