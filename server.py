@@ -37,7 +37,6 @@ def main(args, cfg, backend):
         handles = select.select(listen, [], [])
         for handle in handles[0]:
             if handle == sys.stdin:
-                print listen
                 print handle.readline(),
             elif handle == sock:
                 newsock, fromaddr = handle.accept()
