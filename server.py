@@ -18,7 +18,7 @@ def get_backend(cfg):
         print "backend not configured"
         sys.exit(1)
     if not hasattr(backends, cfg['defaults']['backend']):
-        print "backend not support"
+        print "backend not found"
         sys.exit(1)
     dbconf = cfg[cfg['defaults']['backend']]
     del dbconf['__name__']
@@ -34,9 +34,10 @@ def main(args, cfg, backend):
     sock.listen(socket.SOMAXCONN)
     listen = [sock, sys.stdin]
     while True:
-        handles = select.select(listen, [], listen)
+        handles = select.select(listen, [], [])
         for handle in handles[0]:
             if handle == sys.stdin:
+                print listen
                 print handle.readline(),
             elif handle == sock:
                 newsock, fromaddr = handle.accept()
@@ -74,4 +75,8 @@ if __name__ == "__main__":
     if backend is None: 
         print "backend error"
         sys.exit(1)
-    main(args, cfg, backend)
+    try:
+        main(args, cfg, backend)
+    except KeyboardInterrupt, e:
+        print ""
+        sys.exit(0)

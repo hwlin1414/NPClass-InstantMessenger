@@ -22,10 +22,15 @@ def main(args):
         print "socket error %d: %s" % (e.args[0], e.args[1])
     listen = [ssl_sock, sys.stdin]
     while True:
-        handles = select.select(listen, [], listen)
+        handles = select.select(listen, [], [])
         for handle in handles[0]:
             if handle == sys.stdin:
-                ssl_sock.send(sys.stdin.readline()),
+                try:
+                    ssl_sock.send(sys.stdin.readline()),
+                except socket.error:
+                    ssl_sock.close()
+                    listen.remove(ssl_sock)
+                    return
             else:
                 try:
                     msg = handle.recv(256)
@@ -34,6 +39,7 @@ def main(args):
                 except socket.error, e:
                     handle.close()
                     listen.remove(handle)
+                    return
 
 if __name__ == "__main__":
     cfg = {
@@ -48,4 +54,8 @@ if __name__ == "__main__":
     parser.set_defaults(**cfg)
     args = vars(parser.parse_args(sys.argv[1:]))
     if args['debug']: print args
-    main(args)
+    try:
+        main(args)
+    except KeyboardInterrupt, e:
+        print ""
+        sys.exit(0)
