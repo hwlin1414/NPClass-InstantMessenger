@@ -28,28 +28,28 @@ def get_backend(cfg):
 def main(args, cfg, backend):
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(certfile = cfg['defaults']['cert'], keyfile = cfg['defaults']['key'])
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    sock.bind((args['listen'], args['port']))
-    sock.listen(socket.SOMAXCONN)
-    listen = [sock, sys.stdin]
+    svsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    svsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    svsock.bind((args['listen'], args['port']))
+    svsock.listen(socket.SOMAXCONN)
+    listen = [svsock, sys.stdin]
     while True:
-        handles = select.select(listen, [], [])
-        for handle in handles[0]:
-            if handle == sys.stdin:
-                print handle.readline(),
-            elif handle == sock:
-                newsock, fromaddr = handle.accept()
+        socks = select.select(listen, [], [])
+        for sock in socks[0]:
+            if sock == sys.stdin:
+                pass
+            elif sock == svsock:
+                newsock, fromaddr = sock.accept()
                 listen.append(context.wrap_socket(newsock, server_side=True))
             else:
                 try:
-                    msg = handle.recv(256)
+                    msg = sock.recv(256)
                     if len(msg) == 0: raise socket.error
-                    print "%s: %s" % (str(handle.getpeername()), msg), 
-                    handle.send(msg)
+                    print "%s: %s" % (str(sock.getpeername()), msg),
+                    sock.send(msg)
                 except socket.error, e:
-                    handle.close()
-                    listen.remove(handle)
+                    sock.close()
+                    listen.remove(sock)
 
 if __name__ == "__main__":
     cfg = {

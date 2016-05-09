@@ -14,17 +14,17 @@ def main(args):
     context.check_hostname = False
     context.load_default_certs()
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ssl_sock = context.wrap_socket(sock)
+    clsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ssl_sock = context.wrap_socket(clsock)
     try:
         ssl_sock.connect((args['server'], args['port']))
     except socket.error, e:
         print "socket error %d: %s" % (e.args[0], e.args[1])
     listen = [ssl_sock, sys.stdin]
     while True:
-        handles = select.select(listen, [], [])
-        for handle in handles[0]:
-            if handle == sys.stdin:
+        socks = select.select(listen, [], [])
+        for sock in socks[0]:
+            if sock == sys.stdin:
                 try:
                     ssl_sock.send(sys.stdin.readline()),
                 except socket.error:
@@ -33,12 +33,12 @@ def main(args):
                     return
             else:
                 try:
-                    msg = handle.recv(256)
+                    msg = sock.recv(256)
                     if len(msg) == 0: raise socket.error
-                    print "%s: %s" % (str(handle.getpeername()), msg) ,
+                    print "%s: %s" % (str(sock.getpeername()), msg) ,
                 except socket.error, e:
-                    handle.close()
-                    listen.remove(handle)
+                    sock.close()
+                    listen.remove(sock)
                     return
 
 if __name__ == "__main__":
