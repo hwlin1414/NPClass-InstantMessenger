@@ -7,6 +7,7 @@ import sys
 import socket, ssl
 import select
 import backends
+import handle
 
 cfgfile = ('server.conf.example', 'server.conf')
 
@@ -43,10 +44,7 @@ def main(args, cfg, backend):
                 listen.append(context.wrap_socket(newsock, server_side=True))
             else:
                 try:
-                    msg = sock.recv(256)
-                    if len(msg) == 0: raise socket.error
-                    print "%s: %s" % (str(sock.getpeername()), msg),
-                    sock.send(msg)
+                    handle.recv(sock)
                 except socket.error, e:
                     sock.close()
                     listen.remove(sock)

@@ -7,6 +7,7 @@ import sys
 import os
 import socket, ssl
 import select
+import handle
 
 def main(args):
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
@@ -26,16 +27,15 @@ def main(args):
         for sock in socks[0]:
             if sock == sys.stdin:
                 try:
-                    ssl_sock.send(sys.stdin.readline()),
+                    line = sys.stdin.readline()
+                    handle.cmd(ssl_sock, line)
                 except socket.error:
                     ssl_sock.close()
                     listen.remove(ssl_sock)
                     return
             else:
                 try:
-                    msg = sock.recv(256)
-                    if len(msg) == 0: raise socket.error
-                    print "%s: %s" % (str(sock.getpeername()), msg) ,
+                    handle.recv(sock)
                 except socket.error, e:
                     sock.close()
                     listen.remove(sock)
