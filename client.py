@@ -35,7 +35,7 @@ def main(args):
                     return
             else:
                 try:
-                    handle.recv(sock)
+                    handle.recv(sock, None)
                 except socket.error, e:
                     sock.close()
                     listen.remove(sock)

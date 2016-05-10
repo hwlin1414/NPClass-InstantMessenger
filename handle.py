@@ -37,7 +37,7 @@ def cmd(sock, lines):
         (func, attr) = ret
         send_pkt(sock, lines[0], func, attr)
 
-def recv(sock):
+def recv(sock, args):
     pack = recv_pkt(sock)
     if pack is None: return False
     print pack
@@ -49,7 +49,7 @@ def recv(sock):
         print "Unknown Pack Recieved:"
         print pack
         return True
-    ret = func(pack['attr'])
+    ret = func(pack['attr'], args)
     if ret is not None:
         (func, attr) = ret
         send_pkt(sock, pack['mod_name'], func, attr)

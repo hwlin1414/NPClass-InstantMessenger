@@ -44,7 +44,7 @@ def main(args, cfg, backend):
                 listen.append(context.wrap_socket(newsock, server_side=True))
             else:
                 try:
-                    handle.recv(sock)
+                    handle.recv(sock, cfg)
                 except socket.error, e:
                     sock.close()
                     listen.remove(sock)
