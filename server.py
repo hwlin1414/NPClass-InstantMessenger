@@ -27,6 +27,7 @@ def get_backend(cfg):
     return backend.open()
 
 def main(args, cfg, backend):
+    users = {}
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(certfile = cfg['defaults']['cert'], keyfile = cfg['defaults']['key'])
     svsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,14 +39,26 @@ def main(args, cfg, backend):
         socks = select.select(listen, [], [])
         for sock in socks[0]:
             if sock == sys.stdin:
+                line = sys.stdin.readline()
+                if line == '\n':
+                    print users
+                    continue
+                handle.cmd(None, line, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': None}, 'main2')
                 pass
             elif sock == svsock:
                 newsock, fromaddr = sock.accept()
                 listen.append(context.wrap_socket(newsock, server_side=True))
             else:
                 try:
-                    handle.recv(sock, cfg)
+                    u = None
+                    for _ in users:
+                        if users[_]['sock'] == sock: u = _
+                    handle.recv(sock, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': u})
                 except socket.error, e:
+                    todel = None
+                    for _ in users:
+                        if users[_]['sock'] == sock: todel = _
+                    if todel is not None: del users[todel]
                     sock.close()
                     listen.remove(sock)
 

@@ -22,20 +22,21 @@ def send_pkt(sock, mod_name, mod_func, attr):
     pack = struct.pack('!I', len(pkt)) + pkt
     sock.send(pack)
 
-def cmd(sock, lines):
+def cmd(sock, lines, args, func = 'main'):
     lines = shlex.split(lines)
-    if len(lines) < 2:
+    if len(lines) < 1:
         print "Command Length Error"
     try:
         mod = getattr(modules, lines[0])
-        func = getattr(mod, 'main')
+        func = getattr(mod, func)
     except AttributeError, e:
         print "Command Not Found"
         return
-    ret = func(lines[1:])
+    ret = func(lines[1:], args)
     if ret is not None:
         (func, attr) = ret
-        send_pkt(sock, lines[0], func, attr)
+        if func is not None:
+            send_pkt(sock, lines[0], func, attr)
 
 def recv(sock, args):
     pack = recv_pkt(sock)

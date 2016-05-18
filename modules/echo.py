@@ -1,4 +1,4 @@
-def main(lines):
+def main(lines, args):
     return ('server', lines)
     
 def server(attr, args):
