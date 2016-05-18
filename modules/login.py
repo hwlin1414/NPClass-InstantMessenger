@@ -29,7 +29,10 @@ def auth(attr, args):
     user = args['backend'].get('user-' + attr[0])
     if user['password'] == crypt.crypt(attr[1], user['password']):
         args['users'][attr[0]] = {'sock': args['sock']}
-        return ('prn', {'error': None, 'msg': user['msg']})
+        msg = user['msg']
+        user['msg'] = []
+        args['backend'].set('user-' + attr[0], user)
+        return ('prn', {'error': None, 'msg': msg})
     else:
         return ('prn', {'error': "Password Mismatch"})
 

@@ -27,7 +27,7 @@ def get_backend(cfg):
     return backend.open()
 
 def main(args, cfg, backend):
-    users = {}
+    users = {'console': {'sock': sys.stdin}}
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     context.load_cert_chain(certfile = cfg['defaults']['cert'], keyfile = cfg['defaults']['key'])
     svsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,7 +43,7 @@ def main(args, cfg, backend):
                 if line == '\n':
                     print users
                     continue
-                handle.cmd(None, line, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': None}, 'main2')
+                handle.cmd(None, line, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': 'console'}, 'main2')
                 pass
             elif sock == svsock:
                 newsock, fromaddr = sock.accept()

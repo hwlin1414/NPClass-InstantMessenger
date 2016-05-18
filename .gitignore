@@ -1,5 +1,5 @@
 server.conf
 server.crt
 server.key
-
+*.swp
 *.pyc
