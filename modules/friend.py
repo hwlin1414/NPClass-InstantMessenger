@@ -25,7 +25,6 @@ def list(attr, args):
     if user is None:
         print "user error? (list)"
         user = {'friends': [], 'password': passwd, 'msg': []}
-    print user['friends']
     frs = user['friends']
     frlist = []
     for fr in frs:
