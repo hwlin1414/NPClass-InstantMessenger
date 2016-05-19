@@ -5,7 +5,8 @@ Features:
     Password SHA-512 Hashed
     Mysql Backend Support
     File Backend Support
+    Server Listen, Ports can be configure in config file and command lines
     Server Command - broadcast
     Server Command - kick
     Server Command - send
-    Modulized
+    Command Modulized
