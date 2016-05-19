@@ -6,6 +6,7 @@ Features:
     Mysql Backend Support
     File Backend Support
     Server Listen, Ports can be configure in config file and command lines
+    Server Command - login (regist user)
     Server Command - broadcast
     Server Command - kick
     Server Command - send
