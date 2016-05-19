@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
 import socket
 import struct
 import shlex
@@ -13,7 +15,7 @@ def recv_pkt(sock):
     (l, ) = struct.unpack('!I', l)
     pack = sock.recv(l)
     if len(pack) != l:
-        print "Recieve Length Error"
+        print "Recieve Length Error 2"
         return None
     return pack
 
@@ -26,6 +28,7 @@ def cmd(sock, lines, args, func = 'main'):
     lines = shlex.split(lines)
     if len(lines) < 1:
         print "Command Length Error"
+        return
     try:
         mod = getattr(modules, lines[0])
         func = getattr(mod, func)
@@ -41,7 +44,7 @@ def cmd(sock, lines, args, func = 'main'):
 def recv(sock, args):
     pack = recv_pkt(sock)
     if pack is None: return False
-    print pack
+    if args['arg']['debug']: print pack
     pack = json.loads(pack)
     try:
         mod = getattr(modules, pack['mod_name'])

@@ -22,21 +22,21 @@ def main(args):
     except socket.error, e:
         print "socket error %d: %s" % (e.args[0], e.args[1])
     listen = [ssl_sock, sys.stdin]
-    handle.cmd(ssl_sock, 'login', None)
+    handle.cmd(ssl_sock, 'login', {'arg': args, 'sock': ssl_sock})
     while True:
         socks = select.select(listen, [], [])
         for sock in socks[0]:
             if sock == sys.stdin:
                 try:
                     line = sys.stdin.readline()
-                    handle.cmd(ssl_sock, line, None)
+                    handle.cmd(ssl_sock, line, {'arg': args, 'sock': ssl_sock})
                 except socket.error:
                     ssl_sock.close()
                     listen.remove(ssl_sock)
                     return
             else:
                 try:
-                    handle.recv(sock, None)
+                    handle.recv(sock, {'arg': args, 'sock': ssl_sock})
                 except socket.error, e:
                     sock.close()
                     listen.remove(sock)

@@ -22,7 +22,6 @@ def hand(attr, args):
             user = {'friends': [], 'password': passwd, 'msg': []}
         user['msg'].append((args['user'], attr['msg']))
         args['backend'].set('user-' + attr['user'], user)
-        
 
 def pr(attr, args):
     print "%s: %s" % (attr[0], attr[1])

@@ -43,7 +43,7 @@ def main(args, cfg, backend):
                 if line == '\n':
                     print users
                     continue
-                handle.cmd(None, line, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': 'console'}, 'main2')
+                handle.cmd(None, line, {'arg': args, 'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': 'console'}, 'main2')
                 pass
             elif sock == svsock:
                 newsock, fromaddr = sock.accept()
@@ -53,7 +53,7 @@ def main(args, cfg, backend):
                     u = None
                     for _ in users:
                         if users[_]['sock'] == sock: u = _
-                    handle.recv(sock, {'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': u})
+                    handle.recv(sock, {'arg': args, 'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': u})
                 except socket.error, e:
                     todel = None
                     for _ in users:
