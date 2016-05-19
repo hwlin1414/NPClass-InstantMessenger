@@ -15,7 +15,6 @@ def add(attr, args):
     if user is None:
         print "user error? (add)"
         user = {'friends': [], 'password': passwd, 'msg': []}
-    print attr[0]
     if attr[0] not in user['friends']:
         user['friends'].append(attr[0])
     args['backend'].set('user-' + args['user'], user)
