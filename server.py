@@ -41,7 +41,6 @@ def main(args, cfg, backend):
             if sock == sys.stdin:
                 line = sys.stdin.readline()
                 if line == '\n':
-                    print users
                     continue
                 handle.cmd(None, line, {'arg': args, 'cfg': cfg, 'backend': backend, 'users': users, 'sock': sock, 'user': 'console'}, 'main2')
                 pass
