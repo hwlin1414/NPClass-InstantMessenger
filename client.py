@@ -21,6 +21,7 @@ def main(args):
         ssl_sock.connect((args['server'], args['port']))
     except socket.error, e:
         print "socket error %d: %s" % (e.args[0], e.args[1])
+        sys.exit(1)
     listen = [ssl_sock, sys.stdin]
     args = {'arg': args, 'sock': ssl_sock}
     handle.cmd(ssl_sock, 'login', args)

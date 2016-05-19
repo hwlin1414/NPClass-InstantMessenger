@@ -1,0 +1,11 @@
+NPClass-InstantMessenger
+
+Features:
+    All Packets TLS 1.2 encrypted
+    Password SHA-512 Hashed
+    Mysql Backend Support
+    File Backend Support
+    Server Command - broadcast
+    Server Command - kick
+    Server Command - send
+    Modulized

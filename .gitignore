@@ -1,5 +1,9 @@
-server.conf
-server.crt
-server.key
+/server.conf
+/server.crt
+/server.key
+
+/db.json
+
 *.swp
 *.pyc
+
