@@ -2,6 +2,7 @@
 listen = 0.0.0.0
 port = 4096
 backend = mysql
+#backend = file
 cert = server.crt.example
 key = server.key.example
 
@@ -11,3 +12,6 @@ port = 3306
 user = imcuser
 passwd = imcpass
 db = imc
+
+[file]
+path = db.json

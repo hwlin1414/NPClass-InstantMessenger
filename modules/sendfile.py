@@ -72,7 +72,10 @@ def tr(attr, args):
 def br(attr, args):
     pkt = json.dumps({'mod_name': 'sendfile', 'mod_func': 'rr', 'attr': attr})
     pack = struct.pack('!I', len(pkt)) + pkt
-    args['users'][attr['to']]['sock'].send(pack)
+    try:
+        args['users'][attr['to']]['sock'].send(pack)
+    except:
+        pass
     return None
 
 def rr(attr, args):
